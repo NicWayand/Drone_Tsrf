@@ -3,10 +3,10 @@ import numpy as np
 import xarray as xr
 import xmap
 from scipy.ndimage.morphology import distance_transform_edt
+from scipy import ndimage as nd
+from skimage import filters
 from rasterio.warp import transform
 import seaborn as sns
-from scipy import ndimage as nd
-
 sns.set_style('white')
 sns.set_context("talk", font_scale=1.2, rc={"lines.linewidth": 2})
 
@@ -29,10 +29,8 @@ da_Tsrf = da_Tsrf.where(da_Tsrf>=-50) # Remove missing values
 da_rgb = da_rgb.where(da_rgb>0) # 0 is missing
 
 # Create snow mask from grayscale
-from skimage import filters
 X = da_rgb.values
-thres = filters.threshold_otsu(X[~np.isnan(X)])*1.3 # 20% increase to be more conservative
-print(thres)
+thres = filters.threshold_otsu(X[~np.isnan(X)])
 snow_mask = da_rgb.where(da_rgb>thres)
 snow_mask.attrs = da_SD.attrs # add back attributes that get lost above
 
